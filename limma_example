@@ -1,0 +1,32 @@
+# Load the necessary libraries
+library(limma)
+
+# Read the CSV file
+data <- read.csv(file_path,  row.names = 1)
+
+
+# Print the first few rows of the data
+head(data)
+
+# Calculate the variance for each gene
+gene_variances <- apply(data, 1, var)
+
+# Choose a threshold for the variance
+variance_threshold <- 0.0001  # adjust this value based on your specific needs
+
+# Find the genes that meet the threshold
+keep <- gene_variances > variance_threshold
+
+# Filter the data
+filtered_data <- data[keep, ]
+
+# Create a design matrix
+# Adjust the numbers according to the number of samples in each group
+group <- factor(c(rep("A", 92), rep("B", 91)))
+design <- model.matrix(~0 + group)
+
+# Fit the linear model
+fit <- lmFit(filtered_data, design)
+
+# Get the top table of genes
+topTable(fit)
