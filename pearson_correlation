@@ -1,0 +1,42 @@
+# compute correlations between CRGs and lncRNAs and Pearson’s correlation coefficient |R2|> 0.4 and P < 0.05 were used as thresholds
+
+# Install and load the Hmisc package
+if (!require(Hmisc)) {
+  install.packages("Hmisc")
+  library(Hmisc)
+}
+
+# Specify the path to the CSV file
+file_path <- "C:/Users/Zum_Z/Documents/pivot_df_19_feb_v6.csv"
+
+# Read the CSV file
+data <- read.csv(file_path,  row.names = 1)
+
+# Print the first few rows of the data
+head(data)
+
+#
+dim(data)
+
+# Transpose the data
+transposed_data <- t(data)
+
+# Reset the row names
+rownames(transposed_data) <- NULL
+
+# Compute the correlation matrix along with the p-values
+result <- rcorr(as.matrix(transposed_data))
+
+# Get the matrix of p-values
+pvalue_matrix <- result$P
+
+# Initialize matrices to store filtered results
+filtered_correlation_matrix <- matrix(NA, ncol = ncol(correlation_matrix), nrow = nrow(correlation_matrix))
+filtered_pvalue_matrix <- matrix(NA, ncol = ncol(pvalue_matrix), nrow = nrow(pvalue_matrix))
+
+# Apply the thresholds
+threshold_indices <- which(abs(correlation_matrix) > 0.4 & pvalue_matrix < 0.05, arr.ind = TRUE)
+
+# Fill in the filtered matrices
+filtered_correlation_matrix[threshold_indices] <- correlation_matrix[threshold_indices]
+filtered_pvalue_matrix[threshold_indices] <- pvalue_matrix[threshold_indices]
