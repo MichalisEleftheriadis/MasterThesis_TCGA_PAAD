@@ -1,0 +1,117 @@
+---
+title: "R Notebook"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r}
+# Load the necessary libraries
+library(limma)
+```
+
+```{r}
+# "C:\Users\Zum_Z\Documents\pivot_df_19_feb_v6.csv"
+
+# Specify the path to the CSV file
+file_path <- "C:/Users/Zum_Z/Documents/pivot_df_19_feb_v6.csv" 
+```
+
+```{r}
+# Read the CSV file
+data <- read.csv(file_path,  row.names = 1)
+```
+
+```{r}
+# Print the first few rows of the data
+head(data)
+```
+
+```{r}
+# Get the dimensions of the data
+dim(data)
+```
+
+```{r}
+# Calculate the variance for each gene
+gene_variances <- apply(data, 1, var)
+
+# Choose a threshold for the variance
+variance_threshold <- 0.0001  # adjust this value based on your specific needs
+
+# Find the genes that meet the threshold
+keep <- gene_variances > variance_threshold
+
+# Filter the data
+filtered_data <- data[keep, ]
+```
+
+```{r}
+head(filtered_data[1:10])
+```
+
+```{r}
+dim(filtered_data)
+```
+
+```{r}
+# Create a design matrix
+# Adjust the numbers according to the number of samples in each group
+group <- factor(c(rep("A", 92), rep("B", 91)))
+design <- model.matrix(~0 + group)
+```
+
+```{r}
+dim(design)
+```
+
+```{r}
+# Fit the linear model
+fit <- lmFit(filtered_data, design)
+
+```
+
+```{r}
+# Apply empirical Bayes statistics
+fit <- eBayes(fit)
+```
+
+```{r}
+# Get the top table of genes
+top_genes <- topTable(fit, number=20, adjust="BH")
+```
+
+```{r}
+# Get the top table of genes
+top_genes
+```
+
+```{r}
+#top200_genes <- topTable(fit, adjust="BH", number=200)
+```
+
+```{r}
+# Save the topTable to a CSV file
+write.csv(top200_genes, file = "top200_genes_25Feb.csv")
+```
+
+```{r}
+topGenes = topTable(fit, coef=1, sort.by="p", number=Inf)
+```
+
+```{r}
+# Save the topTable to a CSV file
+write.csv(topGenes1, file = "LimmaTopTableResults.csv")
+```
+
+```{r}
+
+```
+
+```{r}
+
+```
+
+```{r}
+
+```
